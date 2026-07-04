@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS orders_tx_hash_unique ON public.orders (tx_hash) WHERE tx_hash IS NOT NULL;

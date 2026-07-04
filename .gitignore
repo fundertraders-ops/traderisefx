@@ -1,0 +1,6 @@
+.env
+node_modules
+dist
+.vinxi
+.output
+.DS_Store
