@@ -41,14 +41,14 @@ export function AdminSidebar() {
   const isActive = (path: string) => currentPath === path;
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/60">
-      <SidebarHeader className="px-3 py-4">
+    <Sidebar collapsible="icon" className="border-r border-border/70 bg-background/90 backdrop-blur-xl">
+      <SidebarHeader className="px-3 py-4 border-b border-border/60">
         <Link
           to="/admin"
           className="flex items-center gap-2 font-display font-bold text-sm min-w-0"
         >
-          <span className="size-7 rounded-md bg-gold-gradient grid place-items-center text-primary-foreground shrink-0">
-            T
+          <span className="size-8 rounded-2xl bg-gold-gradient grid place-items-center text-primary-foreground shrink-0 shadow-sm">
+            ▾
           </span>
           {!collapsed && (
             <span className="truncate">

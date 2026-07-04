@@ -1,50 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
-import { PlansGrid, type Plan } from "@/components/site/PlansGrid";
+import { PlansGrid } from "@/components/site/PlansGrid";
 import { CTA } from "@/components/site/CTA";
 
-const sizes = ["$10K", "$25K", "$50K", "$100K", "$200K", "$400K"];
-const prices: Record<string, string> = {
-  "$10K": "$89",
-  "$25K": "$189",
-  "$50K": "$289",
-  "$100K": "$489",
-  "$200K": "$989",
-  "$400K": "$1,200",
-};
-
-const plans: Plan[] = [
-  {
-    name: "One-Step",
-    tag: "Fastest",
-    profit: "10% target · 21-day payouts",
-    desc: "Hit a single profit target and you're funded. No second phase, no waiting.",
-    features: [
-      "10% profit target",
-      "5% max daily loss",
-      "10% max overall loss",
-      "Payout cycle: 21 days",
-      "Fee-based account: no 2-minute hold rule",
-      "Up to 80% profit split",
-    ],
-  },
-  {
-    name: "Two-Step",
-    tag: "Most Popular",
-    profit: "8% + 5% target · 14-day payouts",
-    desc: "Lower targets, more flexibility. The classic evaluation path.",
-    features: [
-      "Phase 1: 8% target",
-      "Phase 2: 5% target",
-      "5% daily / 10% overall",
-      "Payout cycle: 14 days",
-      "Fee-based account: no 2-minute hold rule",
-      "Up to 90% profit split",
-    ],
-    accent: true,
-  },
-];
+import { CHALLENGE_PLANS, CHALLENGE_PRICES, CHALLENGE_SIZES } from "@/lib/plans";
 
 export const Route = createFileRoute("/challenges")({
   head: () => ({
@@ -80,7 +40,7 @@ function ChallengesPage() {
               profit splits we offer. One-step for speed, two-step for flexibility.
             </p>
           </div>
-          <PlansGrid plans={plans} sizes={sizes} prices={prices} ctaLabel="Start" />
+          <PlansGrid plans={CHALLENGE_PLANS} sizes={CHALLENGE_SIZES} prices={CHALLENGE_PRICES} ctaLabel="Start" />
 
           <div className="mt-16 max-w-3xl mx-auto rounded-2xl border border-gold/30 bg-gold/5 p-6 md:p-8">
             <span className="text-xs uppercase tracking-[0.2em] text-gold">Payout and hold rules</span>

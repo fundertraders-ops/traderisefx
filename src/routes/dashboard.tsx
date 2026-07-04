@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Copy, Check, Wallet, Users, DollarSign, Clock, Loader2, LogOut, ImageIcon, Shield, Pencil, X as XIcon } from "lucide-react";
+import { Activity, Bell, Copy, Check, Clock, CreditCard, DollarSign, Headphones, ImageIcon, LayoutDashboard, Loader2, LogOut, Pencil, Settings, Shield, Target, Trophy, Users, Wallet, X as XIcon } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Nav } from "@/components/site/Nav";
@@ -79,65 +79,79 @@ function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-site-mesh">
       <Nav />
-      <main className="pt-28 pb-16">
-        <section className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <span className="text-xs uppercase tracking-[0.2em] text-gold">Account</span>
-              <h1 className="mt-2 text-3xl md:text-4xl font-bold">
-                Welcome{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">{profile.email}</p>
+      <main className="pt-20 pb-10">
+        <section className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+            <DashboardSidebar signOut={signOut} />
+
+            <div className="min-w-0 space-y-6">
+              <div className="premium-card relative overflow-hidden rounded-[1.8rem] p-6 md:p-8">
+                <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold/15 blur-3xl" />
+                <div className="relative flex flex-wrap items-center justify-between gap-5">
+                  <div>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-gold">Trader dashboard</span>
+                    <h1 className="mt-2 text-3xl font-black md:text-4xl">
+                      Welcome back{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""} 👋
+                    </h1>
+                    <p className="mt-2 text-sm text-muted-foreground">{profile.email}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Link to="/challenges" className="primary-button inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-extrabold transition">
+                      Start New Challenge
+                      <Target size={16} />
+                    </Link>
+                    <button onClick={signOut}
+                      className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card/80 px-4 text-sm font-bold text-muted-foreground transition hover:-translate-y-0.5 hover:border-gold/40 hover:text-foreground">
+                      <LogOut size={15} /> Sign out
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+                <Stat icon={<Wallet className="text-gold" />} label="Wallet balance" value={`$${balance.toFixed(2)}`} />
+                <Stat icon={<DollarSign className="text-gold" />} label="Total earned" value={`$${totalEarned.toFixed(2)}`} />
+                <Stat icon={<Users className="text-gold" />} label="Referrals" value={String(referrals.length)} />
+                <Stat icon={<CreditCard className="text-gold" />} label="Withdrawable" value={`$${withdrawableCommissions.toFixed(2)}`} />
+                <Stat icon={<Clock className="text-gold" />} label="Pending comm." value={`$${pendingCommissions.toFixed(2)}`} />
+                <Stat icon={<Bell className="text-gold" />} label="Pending payouts" value={String(pendingWithdrawal)} />
+              </div>
+
+              <ReferralLinkPanel
+                currentCode={profile.referral_code}
+                refLink={refLink}
+                copied={copied}
+                copyLink={copyLink}
+                canWithdraw={canWithdraw}
+                balance={balance}
+                onWithdraw={() => setShowWithdraw(true)}
+                onCodeUpdated={() => qc.invalidateQueries({ queryKey: ["dashboard"] })}
+              />
+
+              <div className="grid gap-6 xl:grid-cols-3">
+                <Panel title="Recent referrals" empty="No referrals yet — share your link to start earning.">
+                  {referrals.slice(0, 8).map((r) => (
+                    <Row key={r.id} left={`User ${r.referred_user_id.slice(0, 8)}`} right={fmt(r.created_at)} />
+                  ))}
+                </Panel>
+                <Panel title="Commissions" empty="Commissions will appear here when a referral makes a purchase.">
+                  {commissions.slice(0, 8).map((c) => (
+                    <Row key={c.id} left={`+$${Number(c.amount).toFixed(2)}`} subLeft={`Order ${c.order_id}`} right={c.status} />
+                  ))}
+                </Panel>
+                <Panel title="Withdrawals" empty="No withdrawal requests yet.">
+                  {withdrawals.slice(0, 8).map((w) => (
+                    <Row key={w.id} left={`$${Number(w.amount).toFixed(2)}`} subLeft={w.method.replace("_", " ").toUpperCase()} right={w.status} />
+                  ))}
+                </Panel>
+              </div>
+
+              <MyTradingAccountsSection />
+              <TradeResultsSection />
             </div>
-            <button onClick={signOut}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:border-gold/40 text-sm">
-              <LogOut size={14} /> Sign out
-            </button>
           </div>
-
-          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            <Stat icon={<Wallet className="text-gold" />} label="Wallet balance" value={`$${balance.toFixed(2)}`} />
-            <Stat icon={<DollarSign className="text-gold" />} label="Total earned" value={`$${totalEarned.toFixed(2)}`} />
-            <Stat icon={<Users className="text-gold" />} label="Referrals" value={String(referrals.length)} />
-            <Stat icon={<DollarSign className="text-gold" />} label="Withdrawable" value={`$${withdrawableCommissions.toFixed(2)}`} />
-            <Stat icon={<Clock className="text-gold" />} label="Pending commissions" value={`$${pendingCommissions.toFixed(2)}`} />
-            <Stat icon={<Clock className="text-gold" />} label="Pending withdrawals" value={String(pendingWithdrawal)} />
-          </div>
-
-          <ReferralLinkPanel
-            currentCode={profile.referral_code}
-            refLink={refLink}
-            copied={copied}
-            copyLink={copyLink}
-            canWithdraw={canWithdraw}
-            balance={balance}
-            onWithdraw={() => setShowWithdraw(true)}
-            onCodeUpdated={() => qc.invalidateQueries({ queryKey: ["dashboard"] })}
-          />
-
-          <div className="mt-8 grid lg:grid-cols-3 gap-6">
-            <Panel title="Recent referrals" empty="No referrals yet — share your link to start earning.">
-              {referrals.slice(0, 8).map((r) => (
-                <Row key={r.id} left={`User ${r.referred_user_id.slice(0, 8)}`} right={fmt(r.created_at)} />
-              ))}
-            </Panel>
-            <Panel title="Commissions" empty="Commissions will appear here when a referral makes a purchase.">
-              {commissions.slice(0, 8).map((c) => (
-                <Row key={c.id} left={`+$${Number(c.amount).toFixed(2)}`} subLeft={`Order ${c.order_id}`} right={c.status} />
-              ))}
-            </Panel>
-            <Panel title="Withdrawals" empty="No withdrawal requests yet.">
-              {withdrawals.slice(0, 8).map((w) => (
-                <Row key={w.id} left={`$${Number(w.amount).toFixed(2)}`} subLeft={w.method.replace("_", " ").toUpperCase()} right={w.status} />
-              ))}
-            </Panel>
-          </div>
-
-          <MyTradingAccountsSection />
-
-          <TradeResultsSection />
         </section>
       </main>
       <Footer />
@@ -151,11 +165,56 @@ function DashboardPage() {
   );
 }
 
+function DashboardSidebar({ signOut }: { signOut: () => void }) {
+  const items = [
+    { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" as const },
+    { label: "Challenges", icon: Target, to: "/challenges" as const },
+    { label: "Accounts", icon: Wallet, to: "/dashboard" as const },
+    { label: "Payouts", icon: DollarSign, to: "/dashboard" as const },
+    { label: "Affiliate", icon: Users, to: "/dashboard" as const },
+    { label: "Support", icon: Headphones, to: "/" as const },
+    { label: "Settings", icon: Settings, to: "/dashboard" as const },
+  ];
+
+  return (
+    <aside className="hidden lg:block">
+      <div className="premium-card sticky top-24 overflow-hidden rounded-[1.6rem] p-4">
+        <div className="mb-4 rounded-2xl bg-gold-gradient p-4 text-primary-foreground shadow-lg">
+          <div className="grid size-11 place-items-center rounded-2xl bg-white/20">
+            <Trophy size={22} />
+          </div>
+          <div className="mt-4 text-lg font-black">New Challenge</div>
+          <p className="mt-1 text-xs leading-5 text-white/80">Start a fresh challenge and unlock your next funded account.</p>
+          <Link to="/challenges" className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-white text-sm font-black text-slate-900">Start Now</Link>
+        </div>
+        <nav className="space-y-1">
+          {items.map((item, index) => (
+            <Link key={`${item.label}-${index}`} to={item.to} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-muted-foreground transition hover:bg-secondary hover:text-foreground">
+              <item.icon size={17} />
+              {item.label}
+            </Link>
+          ))}
+          <button onClick={signOut} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-muted-foreground transition hover:bg-secondary hover:text-foreground">
+            <LogOut size={17} /> Sign out
+          </button>
+        </nav>
+        <div className="mt-4 rounded-2xl border border-border bg-background/70 p-4">
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
+            <Activity size={14} className="text-gold" /> Live equity
+          </div>
+          <div className="mt-2 text-2xl font-black">$128,340</div>
+          <div className="mt-1 text-xs font-bold text-success">+12.45%</div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-5">
+    <div className="premium-card rounded-2xl p-5">
       <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">{icon} {label}</div>
-      <div className="mt-2 text-2xl font-bold font-display text-gold-gradient">{value}</div>
+      <div className="mt-3 text-2xl font-black tracking-tight text-gold-gradient">{value}</div>
     </div>
   );
 }
@@ -163,8 +222,8 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
 function Panel({ title, empty, children }: { title: string; empty: string; children: React.ReactNode }) {
   const isEmpty = Array.isArray(children) ? children.length === 0 : !children;
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-5">
-      <h3 className="font-bold">{title}</h3>
+    <div className="premium-card rounded-2xl p-5">
+      <h3 className="font-black">{title}</h3>
       <div className="mt-3 space-y-2">
         {isEmpty ? <p className="text-xs text-muted-foreground">{empty}</p> : children}
       </div>
@@ -174,7 +233,7 @@ function Panel({ title, empty, children }: { title: string; empty: string; child
 
 function Row({ left, subLeft, right }: { left: string; subLeft?: string; right: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm py-2 border-b border-border last:border-0">
+    <div className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-secondary">
       <div>
         <div className="font-medium">{left}</div>
         {subLeft && <div className="text-xs text-muted-foreground">{subLeft}</div>}
@@ -203,14 +262,14 @@ function MyTradingAccountsSection() {
   }
 
   return (
-    <div className="mt-10">
+    <div className="mt-2">
       <div>
         <span className="text-xs uppercase tracking-[0.2em] text-gold">Trading Accounts</span>
         <h2 className="mt-1 text-2xl font-bold">Your funded accounts</h2>
       </div>
 
       {accounts.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-border bg-card/30 p-8 text-center">
+        <div className="premium-card mt-6 rounded-[1.4rem] border-dashed p-8 text-center">
           <Wallet className="mx-auto text-muted-foreground" />
           <p className="mt-2 text-sm text-muted-foreground">No trading account delivered yet. After your purchase is verified, your account credentials will appear here.</p>
         </div>
@@ -225,7 +284,7 @@ function MyTradingAccountsSection() {
             const remainingDays = Math.max(0, Math.ceil(remainingMs / 86400000));
             const payoutReady = !breached && eligibleAt && remainingMs <= 0;
             return (
-              <div key={a.id} className={`rounded-2xl border bg-card/50 p-5 ${breached ? "border-destructive/40" : "border-border"}`}>
+              <div key={a.id} className={`premium-card rounded-[1.4rem] p-5 ${breached ? "border-destructive/40" : ""}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="text-xs uppercase tracking-widest text-muted-foreground">{a.plan} · {a.size}</div>
@@ -255,7 +314,7 @@ function MyTradingAccountsSection() {
                 </div>
 
                 {!breached && (
-                  <div className="mt-4 rounded-lg border border-border bg-background/60 p-3">
+                  <div className="mt-4 rounded-2xl border border-border bg-background/70 p-3">
                     <div className="flex items-center justify-between gap-3 text-xs">
                       <div className="space-y-2">
                         <div className="text-muted-foreground uppercase tracking-widest text-[10px]">Payout cycle</div>
@@ -382,7 +441,7 @@ function PayoutDialog({ account, onClose, onDone }: { account: any; onClose: () 
 
 function Mini({ label, v, cls }: { label: string; v: string; cls?: string }) {
   return (
-    <div className="rounded-lg bg-background/60 border border-border p-2">
+    <div className="rounded-xl border border-border bg-background/70 p-2">
       <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className={`mt-0.5 text-sm font-bold ${cls ?? ""}`}>{v}</div>
     </div>
@@ -400,7 +459,7 @@ function TradeResultsSection() {
   const activeResult = results.find((r) => r.id === active);
 
   return (
-    <div className="mt-10">
+    <div className="mt-2">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <span className="text-xs uppercase tracking-[0.2em] text-gold">Trade Results</span>
@@ -427,17 +486,17 @@ function TradeResultsSection() {
       {isLoading ? (
         <div className="mt-6 grid place-items-center py-10"><Loader2 className="animate-spin text-gold" /></div>
       ) : results.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-border bg-card/30 p-8 text-center">
+        <div className="premium-card mt-6 rounded-[1.4rem] border-dashed p-8 text-center">
           <ImageIcon className="mx-auto text-muted-foreground" />
           <p className="mt-2 text-sm text-muted-foreground">No Trade Rise FX trade results published yet.</p>
         </div>
       ) : (
-        <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((r) => (
             <button
               key={r.id}
               onClick={() => setActive(r.id)}
-              className="text-left rounded-2xl border border-border bg-card/50 overflow-hidden hover:border-gold/40 transition group"
+              className="premium-card group overflow-hidden rounded-[1.4rem] text-left transition hover:-translate-y-1 hover:border-gold/40"
             >
               {r.image_url ? (
                 <img src={r.image_url} alt={r.title} className="w-full aspect-video object-cover group-hover:scale-[1.02] transition" />
@@ -461,7 +520,7 @@ function TradeResultsSection() {
               <img src={activeResult.image_url} alt={activeResult.title} className="w-full max-h-[70vh] object-contain bg-black" />
             )}
             <div className="p-5">
-              <div className="font-bold">{activeResult.title}</div>
+              <div className="font-black">{activeResult.title}</div>
               <div className="text-xs text-muted-foreground">Trade date: {new Date(activeResult.trade_date + "T00:00:00").toLocaleDateString()} · Uploaded {new Date(activeResult.created_at).toLocaleString()}</div>
               {activeResult.caption && <p className="mt-3 text-sm text-muted-foreground whitespace-pre-wrap">{activeResult.caption}</p>}
               <button onClick={() => setActive(null)} className="mt-5 h-10 px-4 rounded-lg border border-border text-sm">Close</button>
@@ -628,7 +687,7 @@ function ReferralLinkPanel({
   };
 
   return (
-    <div className="mt-6 rounded-2xl border border-gold/30 bg-emerald-gradient p-6">
+    <div className="premium-card mt-2 rounded-[1.5rem] p-6">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div className="min-w-0">
           <div className="text-xs uppercase tracking-widest text-gold-soft">Your referral link</div>
@@ -677,7 +736,7 @@ function ReferralLinkPanel({
           {canWithdraw ? "Request withdrawal" : `Withdraw at $100 (${(100 - balance).toFixed(2)} to go)`}
         </button>
       </div>
-      <div className="mt-4 flex items-center gap-2 rounded-lg bg-background/60 border border-border p-3">
+      <div className="mt-4 flex items-center gap-2 rounded-2xl border border-border bg-background/70 p-3">
         <code className="flex-1 text-xs sm:text-sm break-all font-mono">{refLink}</code>
         <button onClick={copyLink} className="shrink-0 p-2 rounded-md border border-border hover:border-gold/40 transition" aria-label="Copy link">
           {copied ? <Check size={16} className="text-gold" /> : <Copy size={16} />}

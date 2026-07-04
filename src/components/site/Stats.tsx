@@ -1,55 +1,25 @@
-import { DollarSign, Users, Activity, Globe } from "lucide-react";
+import { Activity, DollarSign, Globe, Star, Users } from "lucide-react";
 
 const stats = [
-  {
-    icon: DollarSign,
-    value: "$500,000+",
-    label: "Paid Out",
-  },
-  {
-    icon: Users,
-    value: "10,000+",
-    label: "Traders Registered",
-  },
-  {
-    icon: Activity,
-    value: "2,500+",
-    label: "Active Accounts",
-  },
-  {
-    icon: Globe,
-    value: "120+",
-    label: "Countries Served",
-  },
+  { icon: DollarSign, value: "$500,000+", label: "Paid Out" },
+  { icon: Users, value: "10,000+", label: "Traders Registered" },
+  { icon: Activity, value: "2,500+", label: "Active Accounts" },
+  { icon: Globe, value: "120+", label: "Countries Served" },
+  { icon: Star, value: "Excellent", label: "Trader Feedback" },
 ];
 
 export function Stats() {
   return (
-    <section className="py-20 bg-card/30 border-y border-border">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-14">
-          <span className="text-xs uppercase tracking-[0.2em] text-gold">
-            Track record
-          </span>
-          <h2 className="mt-3 text-3xl md:text-4xl font-bold">
-            Our Numbers Speak for Themselves
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <section className="py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid overflow-hidden rounded-[1.6rem] border border-border bg-card shadow-sm md:grid-cols-5">
           {stats.map((stat, i) => (
-            <div
-              key={i}
-              className="flex flex-col items-center text-center p-6 rounded-2xl border border-border bg-background/60 hover:border-gold/30 transition-colors"
-            >
-              <div className="size-12 rounded-full bg-gold/10 grid place-items-center text-gold mb-4">
-                <stat.icon size={22} />
+            <div key={stat.label} className="border-b border-border p-6 text-center last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+              <div className="mx-auto mb-3 grid size-11 place-items-center rounded-2xl bg-gold/10 text-gold">
+                <stat.icon size={20} />
               </div>
-              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                {stat.value}
-              </div>
-              <div className="mt-1 text-sm text-muted-foreground font-medium">
-                {stat.label}
-              </div>
+              <div className="text-2xl font-black tracking-tight md:text-3xl">{stat.value}</div>
+              <div className="mt-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>

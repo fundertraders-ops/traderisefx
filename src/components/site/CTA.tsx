@@ -1,24 +1,28 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export function CTA() {
   return (
-    <section className="py-24">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-gold/30 bg-emerald-gradient p-12 md:p-16 text-center glow-gold">
-          <div className="absolute inset-0 grid-pattern opacity-30" />
+    <section className="py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-[2rem] border border-gold/30 bg-site-mesh p-10 text-center shadow-[0_28px_90px_-55px_color-mix(in_oklab,var(--gold)_70%,transparent)] md:p-16">
+          <div className="absolute inset-0 grid-pattern opacity-25" />
+          <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold/20 blur-3xl" />
           <div className="relative">
-            <h2 className="text-4xl md:text-5xl font-bold max-w-2xl mx-auto leading-tight">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-xs font-black uppercase tracking-widest text-gold">
+              <Zap size={14} /> Ready to trade?
+            </span>
+            <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-black leading-tight md:text-5xl">
               Your capital is waiting. <span className="text-gold-gradient">Go get it.</span>
             </h2>
-            <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-              Join thousands of traders already funded by Trade Rise FX. Start your evaluation today.
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+              Start your evaluation or choose an instant funded route with the same polished dashboard experience.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3 justify-center">
-              <Link to="/challenges" className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gold-gradient text-primary-foreground font-semibold hover:scale-[1.02] transition">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link to="/challenges" className="primary-button inline-flex h-12 items-center gap-2 rounded-xl px-7 text-sm font-extrabold transition">
                 Start a challenge <ArrowRight size={18} />
               </Link>
-              <Link to="/instant" className="inline-flex items-center gap-2 px-8 py-4 rounded-lg border border-gold/30 bg-background/40 hover:bg-background/60 transition">
+              <Link to="/instant" className="inline-flex h-12 items-center gap-2 rounded-xl border border-border bg-card/80 px-7 text-sm font-bold transition hover:-translate-y-0.5 hover:border-gold/40">
                 Get instant funding
               </Link>
             </div>

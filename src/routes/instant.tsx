@@ -1,58 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
-import { PlansGrid, type Plan } from "@/components/site/PlansGrid";
+import { PlansGrid } from "@/components/site/PlansGrid";
 import { CTA } from "@/components/site/CTA";
 import { Zap, Clock, Shield } from "lucide-react";
 
-const sizes = [
-  "$200",
-  "$500",
-  "$1,000",
-  "$2,000",
-  "$3,000",
-  "$4,000",
-  "$5,000",
-  "$10,000",
-  "$20,000",
-  "$30,000",
-  "$40,000",
-  "$50,000",
-];
-
-const prices: Record<string, string> = {
-  "$200": "$35",
-  "$500": "$70",
-  "$1,000": "$130",
-  "$2,000": "$240",
-  "$3,000": "$390",
-  "$4,000": "$520",
-  "$5,000": "$650",
-  "$10,000": "$1,300",
-  "$20,000": "$2,500",
-  "$30,000": "$3,600",
-  "$40,000": "$5,000",
-  "$50,000": "$6,000",
-};
-
-const plans: Plan[] = [
-  {
-    name: "Instant Funded",
-    tag: "No Evaluation",
-    profit: "Direct funding · 14-day payouts",
-    desc: "Get a live funded account immediately. All account sizes share the same transparent rules and instant access.",
-    features: [
-      "No evaluation phase",
-      "Live account in minutes",
-      "Payout cycle: 14 days",
-      "2-minute minimum hold time",
-      "25% daily loss limit",
-      "50% overall loss limit",
-      "70% profit split",
-    ],
-    accent: true,
-  },
-];
+import { INSTANT_PLANS, INSTANT_PRICES, INSTANT_SIZES } from "@/lib/plans";
 
 const perks = [
   { icon: Zap, t: "Live in minutes", d: "Receive your credentials right after checkout." },
@@ -97,7 +50,7 @@ function InstantPage() {
             </p>
           </div>
 
-          <PlansGrid plans={plans} sizes={sizes} prices={prices} ctaLabel="Get" />
+          <PlansGrid plans={INSTANT_PLANS} sizes={INSTANT_SIZES} prices={INSTANT_PRICES} ctaLabel="Get" />
 
           <div className="mt-20 grid sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {perks.map((p) => (
